@@ -1,0 +1,15 @@
+FROM node:16
+
+WORKDIR /app
+
+# Installation des dépendances
+COPY package*.json ./
+RUN npm install
+
+# Copie des fichiers sources
+COPY . .
+
+# Compilation TypeScript
+RUN npm run build
+
+CMD ["node", "dist/server.js"]

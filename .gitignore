@@ -1,0 +1,12 @@
+# Fichiers généraux
+.DS_Store
+*.log
+
+# Client
+client/node_modules/
+client/dist/
+
+# Server
+server/node_modules/
+server/dist/
+server/.env
