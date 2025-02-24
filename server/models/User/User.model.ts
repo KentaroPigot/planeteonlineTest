@@ -35,32 +35,20 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     return await bcrypt.compare(candidatePassword, this.password);
   }
 
-  changedPasswordAfter(JWTTimestamp: number): boolean {
-    if (this.passwordChangedAt) {
-      const changedTimestamp = Math.floor(
-        this.passwordChangedAt.getTime() / 1000
-      );
-      return JWTTimestamp < changedTimestamp;
-    }
-    return false;
-  }
-
-  createPasswordResetToken(): string {
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    this.passwordResetToken = crypto
-      .createHash("sha256")
-      .update(resetToken)
-      .digest("hex");
-    this.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-    return resetToken;
-  }
-
   async calculateDailyWorkload(): Promise<number> {
     const tasks = (await this.getTasks()) as Task[];
     return tasks.reduce((total: number, task: Task) => {
       const duration = calculateDuration(task.startTime, task.endTime);
       return total + duration;
     }, 0);
+  }
+
+  static normalizeName(name: string): string {
+    return name.trim().charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  static normalizeEmail(email: string): string {
+    return email.toLowerCase().trim();
   }
 
   toJSON() {
@@ -91,6 +79,9 @@ User.init(
         notNull: { msg: "Name requis" },
         notEmpty: { msg: "Name ne peut pas être vide" },
       },
+      set(value: string) {
+        this.setDataValue("name", User.normalizeName(value));
+      },
     },
     firstname: {
       type: DataTypes.STRING,
@@ -98,6 +89,9 @@ User.init(
       validate: {
         notNull: { msg: "Firstname requis" },
         notEmpty: { msg: "Firstname ne peut pas êtrevide" },
+      },
+      set(value: string) {
+        this.setDataValue("firstname", User.normalizeName(value));
       },
     },
     email: {
@@ -110,6 +104,9 @@ User.init(
       validate: {
         isEmail: { msg: "Veuillez fournir un adresse email" },
       },
+      set(value: string) {
+        this.setDataValue("email", User.normalizeEmail(value));
+      },
     },
     password: {
       type: DataTypes.STRING,
@@ -117,7 +114,18 @@ User.init(
       validate: {
         len: {
           args: [8, 32],
-          msg: "Password doît être entre 8-32 characters de long",
+          msg: "Password doît être entre 8-32 caracters de long",
+        },
+        isStrongPassword(value: string) {
+          if (
+            !/[A-Z]/.test(value) || // Regex pour une majuscule
+            !/[0-9]/.test(value) || // Regex pour un chiffre
+            !/[!@#$%^&*(),.?":{}|<>]/.test(value) // Regex pour un caractere special
+          ) {
+            throw new Error(
+              "Le mot de passe doit contenir au moins une majuscule, un chiffre et un caractère spécial."
+            );
+          }
         },
       },
     },

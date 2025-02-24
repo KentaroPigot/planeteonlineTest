@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import User from "./User.model";
 
 export function addUserHooks(UserModel: typeof User) {
-  UserModel.addHook("beforeSave", async (user: any) => {
+  UserModel.addHook("beforeSave", async (user: User) => {
     if (!user.changed("password")) return;
 
     user.password = await bcrypt.hash(user.password, 12);
