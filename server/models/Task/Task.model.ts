@@ -32,7 +32,7 @@ Task.init(
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: "A task must have a libelle",
+          msg: "Une tâche doit avoir un libelle",
         },
       },
     },
@@ -44,7 +44,7 @@ Task.init(
           const startDate = new Date(value);
           const hours = startDate.getUTCHours();
           if (hours < 8 || hours >= 18) {
-            throw new Error("Task start time must be between 08:00 and 18:00");
+            throw new Error("Une tâche doit commencer entre 08:00 et 17:59");
           }
         },
       },
@@ -55,7 +55,7 @@ Task.init(
       validate: {
         isAfterStart(value: string) {
           if (new Date(value) <= new Date(this.startTime as Date)) {
-            throw new Error("Task end time must be after the start time");
+            throw new Error("La fin d'une tâche doit être après son début");
           }
         },
         isValidEndTime(value: string) {
@@ -63,7 +63,9 @@ Task.init(
           const hours = endDate.getUTCHours();
           const minutes = endDate.getUTCMinutes();
           if (hours < 8 || (hours === 18 && minutes > 0) || hours > 18) {
-            throw new Error("Task end time must be between 08:00 and 18:00");
+            throw new Error(
+              "La fin d'une tâche doit être entre 08:00 et 18:00"
+            );
           }
         },
       },

@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import useUserStore from '@/stores/user'
 
 export default {
@@ -38,15 +38,13 @@ export default {
     const userTasks = computed(() => userStore.userTasks)
 
     // Défini une liste de 11 heures. de 8 à 19, plus jolie
-    const hours = ref(
-      Array.from({ length: 11 }, (_, i) => {
-        const hour = i + 8 // Plage horaire : 8h à 18h
-        return {
-          label: `${hour.toString().padStart(2, '0')}:00`,
-          value: hour,
-        }
-      }),
-    )
+    const hours = Array.from({ length: 11 }, (_, i) => {
+      const hour = i + 8 // Plage horaire : 8h à 18h
+      return {
+        label: `${hour.toString().padStart(2, '0')}:00`,
+        value: hour,
+      }
+    })
 
     // Hauteur d'une heure en pixels
     const hourHeight = 45

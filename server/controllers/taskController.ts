@@ -25,10 +25,10 @@ const updateTaskAssignment = catchAsync(
     const { id: taskId, userId } = req.params;
 
     try {
-      const { updatedTask, action } = await TaskService.updateAssignment(
-        Number(taskId),
-        Number(userId)
-      );
+      const { updatedTask, action } = await new TaskService(
+        taskId
+      ).updateAssignment(userId);
+
       res.status(200).json({
         status: "success",
         action, // "assign" ou "unassign" selon l'action effectuée

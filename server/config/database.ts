@@ -8,6 +8,7 @@ const sequelize = new Sequelize({
   database: process.env.DB_NAME,
   port: parseInt(process.env.DB_PORT || "3306"),
   logging: false,
+  timezone: "+00:00",
 });
 
 export default sequelize;
